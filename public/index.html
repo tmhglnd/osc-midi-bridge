@@ -3,23 +3,25 @@
 <head>
   <title>OSC-Networking</title>
 
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script> -->
-
+  <script src="/socket.io/socket.io.js"></script>
   <script>
-    // const socket = io.connect();
-    // console.log('connected');
+    // var HOST = location.origin.replace(/^http/, 'ws')
+    // var ws = new WebSocket(HOST);
+    // var el;
 
-    // socket.on('message', (msg) => {
-    //   console.log('received:', msg);
-    // })
-    var HOST = location.origin.replace(/^http/, 'ws')
-    var ws = new WebSocket(HOST);
+    // ws.onmessage = function (event) {
+    //   console.log(event);
+    //   el = document.getElementById('server-time');
+    //   el.innerHTML = 'Server time: ' + event.data;
+    // };
+
+    var socket = io();
     var el;
 
-    ws.onmessage = function (event) {
-      el = document.getElementById('server-time');
-      el.innerHTML = 'Server time: ' + event.data;
-    };
+    socket.on('time', function(timeString) {
+      el = document.getElementById('server-time')
+      el.innerHTML = 'Server time: ' + timeString;
+    });
   </script>
 
 </head>
