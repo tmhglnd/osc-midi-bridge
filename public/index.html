@@ -1,7 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OSC-Networking</title>
+  <title>osc bridge</title>
+
+  <style>
+    body {
+      background-color: #white;
+      padding-left: 10pt; 
+    }
+
+    * {
+      text-align: left;
+      font-family: "Andale Mono";
+      color: #222222;
+    }
+
+    p {
+      font-size: 0.8em;
+    }
+  </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
@@ -12,37 +29,67 @@
     console.log(user);
     socket.emit('user', user.name);
 
-    socket.on('message', function(msg) {
-      if (msg[0] !== user.name){
-        console.log('received message:', msg);
+    // var msgHist = [];
+    var logMsg = false;
+
+    socket.on('message', (msg) => {
+      var m = {
+        'user' : msg[0],
+        'content' : msg.slice(1, msg.length)
+      }
+
+      if (m.user !== user.name || logMsg){
+        console.log('received message:', m);
+        // msgHist.unshift(m);
+
+        var p = document.createElement("P");
+        p.innerHTML = JSON.stringify(m);
+        document.getElementById('log').prepend(p);
       }
     });
-
-    // setInterval(() => {
-    //   socket.emit('message', [user.name, "is sending"]);
-    // }, 2000);
-
+    
     function submitUser(){
       user.name = document.getElementById("user").value;
     }
-
+    
     function submitMessage(){
       var msg = document.getElementById("msg").value;
       socket.emit('message', [user.name, msg]);
+    } 
+    
+    function showMsg(){
+      console.log("show", document.getElementById("show").checked);
+      logMsg = document.getElementById("show").checked;
     }
+
+    setInterval(() => {
+      socket.emit('message', [user.name, "testing..."]);
+    }, 1000);    
+
   </script>
 </head>
 <body>
-  <h1>OSC BRIDGE</h1>
+  <h1>osc bridge</h1>
   
-  <p> username:
-    <input type="text" id="user" value="username">
+  <h3>username</h3>
+  <p>
+      <input type="text" id="user" value="username" onEnter="submitUser()">
     <button onclick="submitUser()">use</button>
   </p>
 
-  <p> message:
+  <h3>message</h3>
+  <p> 
     <input type="text" id="msg" value="type a message">
     <button onclick="submitMessage()">send</button>
+  </p>
+
+  <h3>console</h3>
+  <p>
+    <input type="checkbox" id="show" onClick="showMsg()">
+    show/hide personal messages in console
+  </p>
+  <p>
+    <div id="log"></div>
   </p>
 
 </body>
