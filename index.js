@@ -1,15 +1,20 @@
 
-const path = require('path');
+// const path = require('path');
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 5000;
+// const app = express();
+const PORT = process.env.PORT || 5000;
+const INDEX = '/public/index.html';
 
-app.use(express.static(path.join(__dirname, 'public')))
-app.get('/', (req, res) => res.send('Hello World!'));
-app.listen(port, () => console.log('Listening on port: ' + port));
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+
+// app.use(express.static(path.join(__dirname, 'public')))
+// app.get('/', (req, res) => res.send('Hello World!'));
+// app.listen(port, () => console.log('Listening on port: ' + port));
 
 const { Server } = require('ws');
-const wss = new Server(app);
+const wss = new Server({ server });
 
 wss.on('connection', (ws) => {
 	console.log('Client connected');
