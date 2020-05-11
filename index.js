@@ -8,9 +8,9 @@ const socket = require('socket.io');
 const PORT = process.env.PORT || 5000;
 const INDEX = '/public/index.html';
 
-const server = express()
+let server = express()
 .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-.listen(PORT, () => console.log(`Listening on ${PORT}`));
+.listen(PORT, () => console.log('Listening on port: ' + PORT));
 
 // app.use(express.static(path.join(__dirname, 'public')))
 // app.get('/', (req, res) => res.send('Hello World!'));
@@ -26,10 +26,20 @@ const io = socket(server);
 // });
 
 io.on('connection', (socket) => {
-	console.log('client connected:', socket.id);
-	socket.on('disconnect', () => {
-		console.log('client disconnected:', socket.id);
+	let username;
+	socket.on('user', (user) => {
+		username = user;
+		console.log('new user:', user, socket.id);
 	})
+	
+	socket.on('disconnect', () => {
+		console.log('user disconnected:', username, socket.id);
+	});
+
+	socket.on('message', (msg) => {
+		console.log('received:', msg);
+		io.emit('message', msg);
+	});
 })
 
 // setInterval(() => {
@@ -38,9 +48,9 @@ io.on('connection', (socket) => {
 // 	});
 // }, 1000);
 
-setInterval(() => {
-	io.emit('time', new Date().toTimeString())
-}, 1000);
+// setInterval(() => {
+// 	io.emit('message', new Date().toTimeString())
+// }, 1000);
 
 // express()
 //   .use(express.static(path.join(__dirname, 'public')))
