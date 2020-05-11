@@ -21,15 +21,17 @@
   </style>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/anonymus@1"></script>
 
   <script>    
     var socket = io();
-    
-    var user = { name: String(Math.floor(Math.random()*900000)+100000) };
+
+    var user = { name: anonymus.create().toLowerCase().replace(/\s+/g, "_") };
     console.log(user);
     socket.emit('user', user.name);
 
-    // var msgHist = [];
+    var HISTORY = 10;
+    var msgHist = [];
     var logMsg = false;
 
     socket.on('message', (msg) => {
@@ -40,16 +42,37 @@
 
       if (m.user !== user.name || logMsg){
         console.log('received message:', m);
-        // msgHist.unshift(m);
+        msgHist.unshift(m);
+        msgHist = msgHist.slice(0, HISTORY);
 
-        var p = document.createElement("P");
-        p.innerHTML = JSON.stringify(m);
-        document.getElementById('log').prepend(p);
+        document.getElementById('log').innerHTML = "";
+        
+        for (var i=msgHist.length-1; i>=0; i--){  
+          var p = document.createElement('p');
+          var t = document.createTextNode(JSON.stringify(msgHist[i]));
+          p.appendChild(t);
+          document.getElementById('log').prepend(p);
+        }
       }
     });
     
     function submitUser(){
-      user.name = document.getElementById("user").value;
+      var n = document.getElementById("user").value;
+      if (n.length < 3){
+        alert("A minimum of 3 characters as a username is required");
+      } else {
+        user.name = n.replace(/\s+/g, "_");
+      }
+      document.getElementById("user").value = user.name;
+    }
+
+    function randomUser(){
+      user.name = anonymus.create().toLowerCase().replace(/\s+/g, "_");
+      document.getElementById("user").value = user.name;
+    }
+
+    function getUser(){
+      return user.name;
     }
     
     function submitMessage(){
@@ -62,31 +85,60 @@
       logMsg = document.getElementById("show").checked;
     }
 
-    setInterval(() => {
-      socket.emit('message', [user.name, "testing..."]);
-    }, 1000);    
+    function emptyMsg(){
+      msgHist = [];
+      document.getElementById('log').innerHTML = "";
+    }
+
+    var counter = 0;
+    var timer;
+
+    function testStream(){
+      var isOn = document.getElementById("test").checked;
+      console.log("test", isOn);
+      
+      if (isOn){
+        timer = setInterval(testEmit, 250);
+      } else {
+        clearInterval(timer);
+      }
+    }
+
+    function testEmit(){
+      socket.emit('message', [user.name, "test => " + counter.toString(2)]);
+      counter++;
+    }
 
   </script>
 </head>
 <body>
   <h1>osc bridge</h1>
   
-  <h3>username</h3>
+  <h3>=> username</h3>
   <p>
-      <input type="text" id="user" value="username" onEnter="submitUser()">
-    <button onclick="submitUser()">use</button>
+    <input type="text" id="user" value="">
+    <script>document.getElementById("user").value = user.name; </script>
+    <button onClick="submitUser()">set</button>
+    <button onClick="randomUser()">random</button>
   </p>
 
-  <h3>message</h3>
+  <h3>=> message</h3>
   <p> 
-    <input type="text" id="msg" value="type a message">
-    <button onclick="submitMessage()">send</button>
+    <input type="text" id="msg" value="send a message">
+    <button onClick="submitMessage()">send</button>
   </p>
 
-  <h3>console</h3>
+  <h3>=> console</h3>
+  <p>
+    <input type="checkbox" id="test" onClick="testStream()">
+    test stream
+  </p>
   <p>
     <input type="checkbox" id="show" onClick="showMsg()">
-    show/hide personal messages in console
+    personal messages in console
+  </p>
+  <p>
+    <button onClick="emptyMsg()">clear history</button>
   </p>
   <p>
     <div id="log"></div>
