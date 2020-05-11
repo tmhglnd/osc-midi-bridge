@@ -5,14 +5,11 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
 
-  <script>
+  <script>    
+    var socket = io();
+    
     var user = { name: String(Math.floor(Math.random()*900000)+100000) };
     console.log(user);
-
-    // using socket.io
-    var socket = io();
-    var el;
-
     socket.emit('user', user.name);
 
     socket.on('message', function(msg) {
@@ -21,24 +18,33 @@
       }
     });
 
-    setInterval(() => {
-      socket.emit('message', [user.name, "is sending"]);
-    }, 2000);
+    // setInterval(() => {
+    //   socket.emit('message', [user.name, "is sending"]);
+    // }, 2000);
 
     function submitUser(){
       user.name = document.getElementById("user").value;
+    }
+
+    function submitMessage(){
+      var msg = document.getElementById("msg").value;
+      socket.emit('message', [user.name, msg]);
     }
   </script>
 </head>
 <body>
   <h1>OSC BRIDGE</h1>
-
+  
   <p> username:
     <input type="text" id="user" value="username">
     <button onclick="submitUser()">use</button>
   </p>
 
-  <!-- <p id="server-time"></p> -->
+  <p> message:
+    <input type="text" id="msg" value="type a message">
+    <button onclick="submitMessage()">send</button>
+  </p>
+
 </body>
 </html>
 
