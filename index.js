@@ -12,8 +12,7 @@ let server = express()
 
 const io = socket(server);
 
-var nsp = io.of('/aRoom');
-nsp.on('connection', (socket) => {
+io.on('connection', (socket) => {
 	socket.on('user', (user) => {
 		console.log('new user:', user, socket.id);
 	})
