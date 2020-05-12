@@ -12,8 +12,8 @@ let server = express()
 
 const io = socket(server);
 
-
-io.on('connection', (socket) => {
+var nsp = io.of('/aRoom');
+nsp.on('connection', (socket) => {
 	socket.on('user', (user) => {
 		console.log('new user:', user, socket.id);
 	})
@@ -27,3 +27,7 @@ io.on('connection', (socket) => {
 		io.emit('message', msg);
 	});
 });
+
+// setInterval(() => {
+// 	io.broadcast.emit("/fromServer", "test...");
+// }, 250)

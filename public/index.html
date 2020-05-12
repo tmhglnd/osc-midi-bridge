@@ -24,9 +24,14 @@
   <script src="https://cdn.jsdelivr.net/npm/anonymus@1"></script>
 
   <script>    
-    var socket = io();
+    var socket = io('/aRoom');
 
-    var user = { name: anonymus.create().toLowerCase().replace(/\s+/g, "_") };
+    var user = { 
+      name: anonymus.create()
+            .toLowerCase()
+            .replace(/\s+/g, "_") 
+    };
+
     console.log(user);
     socket.emit('user', user.name);
 
@@ -105,7 +110,7 @@
     }
 
     function testEmit(){
-      socket.emit('message', [user.name, "test => " + counter.toString(2)]);
+      socket.emit('message', ["/" + user.name, "test => " + counter.toString(2)]);
       counter++;
     }
 
