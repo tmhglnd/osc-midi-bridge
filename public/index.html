@@ -142,61 +142,58 @@
 			}
 		}*/
 
-		// var midiOut;
-		// var midiIn;
+		var midiOut;
+		var midiIn;
 
-		// WebMidi.enable((err) => {
-		// 	var sI = document.getElementById("midiInputs");
-		// 	var sO = document.getElementById("midiOutputs");
+		WebMidi.enable((err) => {
+			var sI = document.getElementById("midiInputs");
+			var sO = document.getElementById("midiOutputs");
 
-		// 	for (var i=0; i<WebMidi.inputs.length; i++){
-		// 		var p = WebMidi.inputs[i].name;
-	 	// 	 	var o = document.createElement("option");
-	 	// 		o.textContent = p;
-		// 		o.value = p;
-		// 		sI.appendChild(o);
-		// 	}
+			for (var i=0; i<WebMidi.inputs.length; i++){
+				var p = WebMidi.inputs[i].name;
+	 		 	var o = document.createElement("option");
+	 			o.textContent = p;
+				o.value = p;
+				sI.appendChild(o);
+			}
 
-		// 	for (var i=0; i<WebMidi.outputs.length; i++){
-		// 		var p = WebMidi.outputs[i].name;
-	 	// 	 	var o = document.createElement("option");
-	 	// 		o.textContent = p;
-		// 		o.value = p;
-		// 		sO.appendChild(o);
-		// 	}
+			for (var i=0; i<WebMidi.outputs.length; i++){
+				var p = WebMidi.outputs[i].name;
+	 		 	var o = document.createElement("option");
+	 			o.textContent = p;
+				o.value = p;
+				sO.appendChild(o);
+			}
 
-		// 	setMidiIn(WebMidi.inputs[0].name);
-		// 	setMidiOut(WebMidi.outputs[0].name);
-		// });
+			setMidiIn(WebMidi.inputs[0].name);
+			setMidiOut(WebMidi.outputs[0].name);
 
-		// function setMidiIn(port){
-		// 	midiIn = WebMidi.getInputByName(port);
-		// 	midiIn.removeListener('noteon');
-		// 	midiIn.removeListener('controlchange');
+			midiIn.addListener('noteon', 'all',
+				function (e) {
+					console.log("Received note-on:", e, e.note);
+					// midiOut.send(e);
+					// midiOut.playNote(e.)
+				}
+			);
 
-		// 	console.log("midi in:", midiIn.name);
+			midiIn.addListener('controlchange', 'all',
+				function (c) {
+					console.log("Received cc:", c);
+					// midiOut.send(e);
+					// midiOut.playNote(e.)
+				}
+			);
+		});
 
-		// 	midiIn.addListener('noteon', 'all',
-		// 		function (e) {
-		// 			console.log("Received note-on:", e, e.note);
-		// 			// midiOut.send(e);
-		// 			// midiOut.playNote(e.)
-		// 		}
-		// 	);
-
-		// 	midiIn.addListener('controlchange', 'all',
-		// 		function (c) {
-		// 			console.log("Received cc:", c);
-		// 			// midiOut.send(e);
-		// 			// midiOut.playNote(e.)
-		// 		}
-		// 	);
-		// }
+		function setMidiIn(port){
+			midiIn = WebMidi.getInputByName(port);
+			console.log("midi in:", midiIn.name);
+		}
 		
-		// function setMidiOut(port){
-		// 	midiOut = WebMidi.getOutputByName(port);
-		// 	console.log("midi out:", midiOut.name);
-		// }
+		function setMidiOut(port){
+			midiOut = WebMidi.getOutputByName(port);
+			console.log("midi out:", midiOut.name);
+		}
 		 
 		function submitUser(){
 			var n = document.getElementById("user").value;
