@@ -11,6 +11,8 @@ let server = express()
 .listen(PORT, () => console.log('Listening on port: ' + PORT));
 
 const io = socket(server);
+// const redis = require('socket.io-redis');
+// io.adapter(redis({ host: 'localhost', port: 6379 }));
 
 io.on('connection', (socket) => {
 	socket.on('user', (user) => {
