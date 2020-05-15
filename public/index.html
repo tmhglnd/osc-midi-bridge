@@ -29,11 +29,8 @@
 		var socket = io();
 
 		var user = { 
-			name: anonymus.create()
-						.toLowerCase()
-						.replace(/\s+/g, "_") 
+			name: anonymus.create().toLowerCase().replace(/\s+/g, "_") 
 		};
-
 		console.log(user);
 		socket.emit('user', user.name);
 
